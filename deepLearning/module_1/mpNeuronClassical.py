@@ -10,9 +10,9 @@ class MPNeuron:
         self.threshold = threshold
 
     def predict(self, inputs):
-        if any(inputs[index] for index in self.inhibitory):
-            return 0
-        return int(sum(inputs[index] for index in self.excitatory) >= self.threshold)
+        activation = (sum(inputs[index] for index in self.excitatory)
+                      - sum(inputs[index] for index in self.inhibitory))
+        return int(activation >= self.threshold)
 
 
 INPUTS = [(0, 0), (0, 1), (1, 0), (1, 1)]
@@ -33,7 +33,7 @@ def find_neuron(expected):
                                if c == "excitatory")
             inhibitory = tuple(i for i, c in enumerate(connections)
                                if c == "inhibitory")
-            for threshold in range(0, 3):
+            for threshold in range(-2, 3):
                 neuron = MPNeuron(excitatory, inhibitory, threshold)
                 if "".join(str(neuron.predict(x)) for x in INPUTS) == expected:
                     return neuron
